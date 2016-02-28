@@ -5,7 +5,7 @@ from tornado.ioloop import IOLoop
 from tornado.tcpserver import TCPServer
 from tornado import gen
 
-from lib.util import prefix_to_len
+from tool.util import prefix_to_len
 
 _default_seconds = 3
 

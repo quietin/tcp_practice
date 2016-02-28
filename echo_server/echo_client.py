@@ -4,7 +4,7 @@ import socket
 import sys
 import errno
 from tornado.util import errno_from_exception
-from ..lib.util import len_to_prefix
+from tool.util import len_to_prefix
 
 
 class EchoClient:
