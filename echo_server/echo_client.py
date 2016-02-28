@@ -9,8 +9,6 @@ from tool.util import len_to_prefix
 
 class EchoClient:
     port = 8888
-    _buffer_size = 1024
-    _connected = False
 
     def __init__(self, host, size):
         self.size = size
