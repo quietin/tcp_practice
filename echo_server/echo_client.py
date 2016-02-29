@@ -12,9 +12,8 @@ class EchoClient:
 
     def __init__(self, host, size):
         self.size = size
+        self.host = host
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, self.port))
-        self.sock.setblocking(0)
         self.register_signal_handler()
         self._connected = False
 
@@ -52,6 +51,7 @@ class EchoClient:
     def close(self):
         self._connected = False
         self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
 
     def signal_handler(self, signal, frame):
         logger.info('Ctrl+C - Client exit!')
@@ -67,6 +67,11 @@ class EchoClient:
         recv_thread.start()
 
     def connect(self):
+        self.sock.connect((self.host, self.port))
+        self.sock.setblocking(0)
+        if hasattr(socket, "TCP_NODELAY"):
+            self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
         self.spawn_recv_thread()
         self.notify_size()
         self.msg_loop()
