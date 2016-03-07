@@ -1,18 +1,22 @@
 import time
 import signal
+import sys
+import os
 from datetime import timedelta
 from tornado.ioloop import IOLoop
 from tornado.tcpserver import TCPServer
 from tornado import gen
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
+
 from tool.util import prefix_to_len
 
 _default_seconds = 3
-
+count = 0
 
 class EchoServer(TCPServer):
     def __init__(self):
-        logger.info('Start listening')
+        logging.info('Start listening')
         super(EchoServer, self).__init__()
         self._msg_map = {}
         self._conn_counter = 0
@@ -22,7 +26,7 @@ class EchoServer(TCPServer):
 
     @gen.coroutine
     def handle_stream(self, stream, address):
-        logger.info("New connection from %s:%s" % address)
+        logging.info("New connection from %s:%s" % address)
         self._conn_counter += 1
         msg_size = yield self._connection_callback(stream, address)
         yield self._message_callback(stream, address, msg_size)
@@ -44,7 +48,7 @@ class EchoServer(TCPServer):
         on_message(None)
 
     def _on_connection_close(self):
-        logger.info('One client closed')
+        logging.info('One client closed')
         self._conn_counter -= 1
 
     @staticmethod
@@ -52,8 +56,8 @@ class EchoServer(TCPServer):
         if self._conn_counter:
             elapsed = time.time() - self.start_time
             mb = self.bytes_counter / (elapsed * 1024 * 1024)
-            logger.info('Rate: %.3f MB/s, msg: %d/s' %
-                        (mb, int(self.packet_counter / elapsed)))
+            logging.info('Rate: %.3f MB/s, msg: %d/s' %
+                         (mb, int(self.packet_counter / elapsed)))
 
         self.bytes_counter = self.packet_counter = 0
         self.start_time = time.time()
@@ -63,14 +67,14 @@ class EchoServer(TCPServer):
 
 
 def signal_handler(signum, frame):
-    IOLoop.current().add_callback(IOLoop.current().stop)
+    IOLoop.current().add_callback_from_signal(IOLoop.current().stop)
 
 
 if __name__ == '__main__':
     import logging
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    logger = logging.getLogger(__name__)
+
     server = EchoServer()
     server.listen(8888)
     signal.signal(signal.SIGINT, signal_handler)

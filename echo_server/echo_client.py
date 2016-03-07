@@ -2,8 +2,12 @@ import signal
 import threading
 import socket
 import sys
+import os
 import errno
 from tornado.util import errno_from_exception
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
+
 from tool.util import len_to_prefix
 
 
@@ -18,7 +22,7 @@ class EchoClient:
         self._connected = False
 
     def msg_loop(self):
-        logger.info('Have connected to server %s:%s' % (host, self.port))
+        logging.info('Have connected to server %s:%s' % (host, self.port))
         msg = 'H' * size
         self._connected = True
         while self._connected:
@@ -42,7 +46,7 @@ class EchoClient:
                 if not info:
                     self.sock.shutdown(socket.SHUT_WR)
                     self._connected = False
-                    logger.info('Server closed!')
+                    logging.info('Server closed!')
             except socket.error as err:
                 if errno_from_exception(err) in (errno.EWOULDBLOCK, errno.EAGAIN):
                     continue
@@ -54,7 +58,7 @@ class EchoClient:
         self.sock.close()
 
     def signal_handler(self, signal, frame):
-        logger.info('Ctrl+C - Client exit!')
+        logging.info('Ctrl+C - Client exit!')
         self.close()
         sys.exit(0)
 
@@ -79,9 +83,7 @@ class EchoClient:
 
 if __name__ == '__main__':
     import logging
-
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    logger = logging.getLogger(__name__)
     # set host, size as sys argv later
     host = '127.0.0.1'
     size = 64
