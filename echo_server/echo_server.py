@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
 from tool.util import prefix_to_len
 
 _default_seconds = 3
-count = 0
+
 
 class EchoServer(TCPServer):
     def __init__(self):
