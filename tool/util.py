@@ -1,3 +1,6 @@
+import struct
+
+
 def recv_bytes(sock, byte_num):
     buf = []
     while byte_num > 0:
@@ -7,17 +10,11 @@ def recv_bytes(sock, byte_num):
     return ''.join(buf)
 
 
-def prefix_to_len(prefix):
-    return ord(prefix[0]) << 24 | \
-           ord(prefix[1]) << 16 | \
-           ord(prefix[2]) << 8 | \
-           ord(prefix[3])
+def len_unpack(prefix):
+    """network big-endian to int len"""
+    return struct.unpack("!I", prefix)[0]
 
 
-def len_to_prefix(length):
-    parts = "".join([
-        chr(length >> 24 & 0xff),
-        chr(length >> 16 & 0xff),
-        chr(length >> 8 & 0xff),
-        chr(length & 0xff)])
-    return parts
+def len_pack(length):
+    """int len to network big-endian"""
+    return struct.pack("!I", length)

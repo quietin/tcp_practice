@@ -8,7 +8,7 @@ from tornado.util import errno_from_exception
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
 
-from tool.util import len_to_prefix
+from tool.util import len_pack
 
 
 class EchoClient:
@@ -37,7 +37,7 @@ class EchoClient:
                 raise
 
     def notify_size(self):
-        self.sock.send(len_to_prefix(self.size))
+        self.sock.send(len_pack(self.size))
 
     def receive(self):
         while True:

@@ -9,7 +9,7 @@ from tornado import gen
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
 
-from tool.util import prefix_to_len
+from tool.util import len_unpack
 
 _default_seconds = 3
 
@@ -35,7 +35,7 @@ class EchoServer(TCPServer):
     @gen.coroutine
     def _connection_callback(self, stream, addr):
         raw_size = yield stream.read_bytes(4)
-        raise gen.Return(prefix_to_len(raw_size))
+        raise gen.Return(len_unpack(raw_size))
 
     @gen.coroutine
     def _message_callback(self, stream, addr, size):
